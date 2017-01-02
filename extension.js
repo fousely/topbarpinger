@@ -2,6 +2,7 @@
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
+const Util = imports.misc.util;
 
 let text, button;
 
@@ -37,9 +38,36 @@ function init() {
                           x_fill: true,
                           y_fill: false,
                           track_hover: true });
-    let icon = new St.Icon({ icon_name: 'system-run-symbolic',
-                             style_class: 'system-status-icon' });
+    let icon = new St.Icon({style_class: 'greycircle-icon'});
+    
+    /*const exec = require('child_process').exec;
+    exec ('python pingscript.py 4.4.4.4', (error, stdout, stderr) => {
+        if (stdout) {
+            icon = new St.Icon({style_class: 'redcircle-icon'});
+        }
+        else {
+            icon = new St.Icon({style_class: 'greencircle-icon'});
+        }
+    });*/
 
+    /*jQuery.ajax({
+    type: "POST",
+    url: 'runpython.php',
+    dataType: 'json',
+    data: {arguments: ["4.4.4.4"]},
+
+    success: function (obj, textstatus) {
+                  if( !('error' in obj) ) {
+                      icon = new St.Icon({style_class: 'greencircle-icon'});
+                  }
+                  else {
+                      icon = new St.Icon({style_class: 'redcircle-icon'});
+                  }
+             }
+    });*/
+    
+    //Util.spawn(['/usr/bin/python pingscript.py', 'www.google.com']);
+    
     button.set_child(icon);
     button.connect('button-press-event', _showHello);
 }
