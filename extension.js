@@ -1,10 +1,11 @@
 
 const St = imports.gi.St;
+const GLib = imports.gi.GLib;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
 const Util = imports.misc.util;
 
-let text, button;
+let text, button, icon; 
 
 function _hideHello() {
     Main.uiGroup.remove_actor(text);
@@ -31,6 +32,30 @@ function _showHello() {
                        onComplete: _hideHello });
 }
 
+function _changeIcon(color) {
+    if(color == 0)
+        icon = new St.Icon({style_class: 'redcircle-icon'});
+    else if(color == 1)
+        icon = new St.Icon({style_class: 'greencircle-icon'});
+    else if(color == 2)
+        icon = new St.Icon({style_class: 'greycircle-icon'});
+    button.set_child(icon);
+}
+
+function _startPings() {
+    let num = 2;
+    while(true) {
+        GLib.timeout_add_seconds(1, 1, function() { 
+            let command = "python pingscript.py 192.168.3.13";
+            let arr = command.split(" ");
+            let [result, output] = GLib.spawn_sync(null, arr, null, GLib.SpawnFlags.SEARCH_PATH, null);
+            if(output != "null")
+                _changeIcon(output);
+        });
+    }
+    
+}
+
 function init() {
     button = new St.Bin({ style_class: 'panel-button',
                           reactive: true,
@@ -38,7 +63,7 @@ function init() {
                           x_fill: true,
                           y_fill: false,
                           track_hover: true });
-    let icon = new St.Icon({style_class: 'greycircle-icon'});
+    icon = new St.Icon({style_class: 'greycircle-icon'});
     
     /*const exec = require('child_process').exec;
     exec ('python pingscript.py 4.4.4.4', (error, stdout, stderr) => {
@@ -70,6 +95,8 @@ function init() {
     
     button.set_child(icon);
     button.connect('button-press-event', _showHello);
+
+    _startPings();
 }
 
 function enable() {
