@@ -1,10 +1,19 @@
 
-.helloworld-label {
-    font-size: 36px;
+.lostconnection-label {
+    font-size: 50px;
     font-weight: bold;
-    color: #ffffff;
-    background-color: rgba(10,10,10,0.7);
-    border-radius: 5px;
+    color: #ff0000;
+    background-color: rgba(10,10,10,1);
+    border-radius: 10px;
+    padding: .5em;
+}
+
+.gainedconnection-label {
+    font-size: 50px;
+    font-weight: bold;
+    color: #3fff00;
+    background-color: rgba(10,10,10,1);
+    border-radius: 10px;
     padding: .5em;
 }
 

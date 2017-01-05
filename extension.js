@@ -9,14 +9,17 @@ const Lang = imports.lang;
 
 let text, button, icon, ip, numMiss, isGreen;
 
-function _hideHello() {
+function _hideNotify() {
     Main.uiGroup.remove_actor(text);
     text = null;
 }
 
-function _showHello() {
+function _notifyUser(option) {
     if (!text) {
-        text = new St.Label({ style_class: 'helloworld-label', text: "Hello World" });
+        if(option == 0)
+            text = new St.Label({ style_class: 'lostconnection-label', text: "Lost Connection to " + ip });
+        if(option == 1)
+            text = new St.Label({ style_class: 'gainedconnection-label', text: "Re-established Connection" });
         Main.uiGroup.add_actor(text);
     }
 
@@ -28,10 +31,10 @@ function _showHello() {
                       monitor.y + Math.floor(monitor.height / 2 - text.height / 2));
 
     Tweener.addTween(text,
-                     { opacity: 0,
+                     { opacity: 255,
                        time: 2,
                        transition: 'easeOutQuad',
-                       onComplete: _hideHello });
+                       onComplete: _hideNotify });
 }
 
 function _changeIcon(color) {
@@ -44,40 +47,28 @@ function _changeIcon(color) {
     button.set_child(icon);
 }
 
-function _ping() {
-    let ip = "192.168.3.13";
-    let command = "ping -w 1 -c 1 " + ip;
-    let arr = command.split(" ");
-    let [result, output] = GLib.spawn_sync(null, arr, null, GLib.SpawnFlags.SEARCH_PATH, null);
-    let regex = GLib.Regex.match_simple("1 received", output.toString(), GLib.RegexCompileFlags.OPTIMIZE, GLib.RegexMatchFlags.NOTEMPTY);
-    if(regex == true)
-        numMiss = 0;
-    else if (regex == false && numMiss != 3)
-        numMiss+= 1;
-    
-    if(numMiss == 3)
-        _changeIcon(0);
-    else if(numMiss == 0 && !isGreen)
-        _changeIcon(1);
-}
-
 function _startPings() {
     this.timer = Mainloop.timeout_add_seconds(1, Lang.bind(this, function() {
-        let ip = "192.168.3.13";
         let command = "ping -w 1 -c 1 " + ip;
         let arr = command.split(" ");
         let [result, output] = GLib.spawn_sync(null, arr, null, GLib.SpawnFlags.SEARCH_PATH, null);
         let regex = GLib.Regex.match_simple("1 received", output.toString(), GLib.RegexCompileFlags.OPTIMIZE, GLib.RegexMatchFlags.NOTEMPTY);
-        
+
         if(regex == true)
             numMiss = 0;
         else if(regex == false && numMiss != 3)
-            numMiss+= 1;
-    
-        if(numMiss == 3)
+            numMiss += 1;
+
+        if(numMiss == 3 && isGreen) {
             _changeIcon(0);
-        else if(numMiss == 0 && !isGreen)
+            _notifyUser(0);
+            isGreen = false;
+        }
+        else if(numMiss == 0 && !isGreen) {
             _changeIcon(1);
+            _notifyUser(1);
+            isGreen = true;
+        }
         return true;
     }));
 }
@@ -85,6 +76,8 @@ function _startPings() {
 function init() {
     numMiss = 0;
     isGreen = false;
+    ip = "192.168.3.13";
+
     button = new St.Bin({ style_class: 'panel-button',
                           reactive: true,
                           can_focus: true,
@@ -92,9 +85,9 @@ function init() {
                           y_fill: false,
                           track_hover: true });
     icon = new St.Icon({style_class: 'greycircle-icon'});
-    
+
     button.set_child(icon);
-    button.connect('button-press-event', _showHello);
+    //button.connect('button-press-event', _notifyUser);
 
     _startPings();
 }
