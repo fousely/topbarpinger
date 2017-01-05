@@ -1,6 +1,7 @@
 
 const St = imports.gi.St;
 const GLib = imports.gi.GLib;
+const Gtk = imports.gi.Gtk;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
 const Util = imports.misc.util;
@@ -13,6 +14,46 @@ function _hideNotify() {
     Main.uiGroup.remove_actor(text);
     text = null;
 }
+
+/*function _buttonPress() {
+    this._window = new Gtk.ApplicationWindow({
+            application: this.application,
+            window_position: Gtk.WindowPosition.CENTER,
+            default_height: 100,
+            default_width: 300,
+            border_width: 10,
+            title: "Enter IP"
+    });
+
+    // Create the text entry box
+    this.entry = new Gtk.Entry();
+    this._window.add(this.entry);
+
+    // Connect the text entry box to a function that responds to what you type in
+    this.entry.connect("activate", Lang.bind (this, function() {
+        ip = this.entry.get_text();
+        this._greeter = new Gtk.MessageDialog ({
+        transient_for: this._window,
+        modal: true,
+        text: "Using " + this.entry.get_text(),
+        message_type: Gtk.MessageType.OTHER,
+        buttons: Gtk.ButtonsType.OK,
+        });
+
+        // Show the popup dialog
+        this._greeter.show();
+
+        // Bind the OK button to the function that closes the popup
+        this._greeter.connect("response", Lang.bind(this, function() {
+            this._greeter.destroy();
+        }));
+
+
+    }));
+
+    // Show the window and all child widgets
+    this._window.show_all();
+}*/
 
 function _notifyUser(option) {
     if (!text) {
@@ -87,7 +128,8 @@ function init() {
     icon = new St.Icon({style_class: 'greycircle-icon'});
 
     button.set_child(icon);
-    //button.connect('button-press-event', _notifyUser);
+    //this._initMenus();
+    //button.connect('button-press-event', _buttonPress);
 
     _startPings();
 }
